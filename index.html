@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Casa Inteligente</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; background: #181825; color: #fff; padding: 20px; }
+    .grid { display: flex; flex-wrap: wrap; justify-content: center; max-width: 600px; margin: 0 auto; }
+    .card { background: #313244; padding: 20px; border-radius: 12px; margin: 10px; width: 220px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+    button { padding: 10px 18px; margin: 5px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .btn-on { background: #a6e3a1; color: #11111b; }
+    .btn-off { background: #f38ba8; color: #11111b; }
+    .btn-connect { background: #89b4fa; color: #11111b; font-size: 18px; padding: 12px 24px; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+
+  <h1>🏠 Control de Casa Inteligente</h1>
+  <button class="btn-connect" onclick="conectarBLE()">🔵 Conectar Bluetooth</button>
+  <p id="estado">Estado: Desconectado</p>
+
+  <hr style="width: 60%; margin: 20px auto; border-color: #45475a;">
+
+  <div class="grid">
+    <div class="card">
+      <h3>🛏️ Cuarto 1</h3>
+      <button class="btn-on" onclick="enviarComando('C1_ON')">Encender</button>
+      <button class="btn-off" onclick="enviarComando('C1_OFF')">Apagar</button>
+    </div>
+
+    <div class="card">
+      <h3>🛏️ Cuarto 2</h3>
+      <button class="btn-on" onclick="enviarComando('C2_ON')">Encender</button>
+      <button class="btn-off" onclick="enviarComando('C2_OFF')">Apagar</button>
+    </div>
+
+    <div class="card">
+      <h3>🚶 Pasadizo</h3>
+      <button class="btn-on" onclick="enviarComando('PAS_ON')">Encender</button>
+      <button class="btn-off" onclick="enviarComando('PAS_OFF')">Apagar</button>
+    </div>
+
+    <div class="card">
+      <h3>🛋️ Sala</h3>
+      <button class="btn-on" onclick="enviarComando('SAL_ON')">Encender</button>
+      <button class="btn-off" onclick="enviarComando('SAL_OFF')">Apagar</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
