@@ -3,51 +3,259 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control Casa Inteligente</title>
+  <title>Control Domótico ESP32-C3</title>
+  
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; background: #181825; color: #fff; padding: 20px; }
-    .grid { display: flex; flex-wrap: wrap; justify-content: center; max-width: 600px; margin: 0 auto; }
-    .card { background: #313244; padding: 20px; border-radius: 12px; margin: 10px; width: 220px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
-    button { padding: 10px 18px; margin: 5px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-    .btn-on { background: #a6e3a1; color: #11111b; }
-    .btn-off { background: #f38ba8; color: #11111b; }
-    .btn-connect { background: #89b4fa; color: #11111b; font-size: 18px; padding: 12px 24px; margin-bottom: 20px; }
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --primary: #3b82f6;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --text: #f8fafc;
+      --subtext: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin-top: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 1.8rem;
+    }
+
+    .status-container {
+      margin-bottom: 20px;
+      padding: 10px 24px;
+      border-radius: 30px;
+      background-color: #334155;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 1px solid #475569;
+    }
+
+    .connected {
+      background-color: #14532d;
+      color: #4ade80;
+      border-color: #22c55e;
+    }
+
+    .disconnected {
+      background-color: #451a1a;
+      color: #f87171;
+      border-color: #ef4444;
+    }
+
+    .btn-connect {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .btn-connect:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 850px;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid #334155;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+    }
+
+    button.btn-action {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-on {
+      background-color: var(--success);
+      color: white;
+      box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3);
+    }
+
+    .btn-off {
+      background-color: var(--danger);
+      color: white;
+      box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+    }
+
+    button.btn-action:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+
+    button.btn-action:active {
+      transform: scale(0.98);
+    }
   </style>
 </head>
 <body>
 
-  <h1>🏠 Control de Casa Inteligente</h1>
-  <button class="btn-connect" onclick="conectarBLE()">🔵 Conectar Bluetooth</button>
-  <p id="estado">Estado: Desconectado</p>
-
-  <hr style="width: 60%; margin: 20px auto; border-color: #45475a;">
-
-  <div class="grid">
-    <div class="card">
-      <h3>🛏️ Cuarto 1</h3>
-      <button class="btn-on" onclick="enviarComando('C1_ON')">Encender</button>
-      <button class="btn-off" onclick="enviarComando('C1_OFF')">Apagar</button>
-    </div>
-
-    <div class="card">
-      <h3>🛏️ Cuarto 2</h3>
-      <button class="btn-on" onclick="enviarComando('C2_ON')">Encender</button>
-      <button class="btn-off" onclick="enviarComando('C2_OFF')">Apagar</button>
-    </div>
-
-    <div class="card">
-      <h3>🚶 Pasadizo</h3>
-      <button class="btn-on" onclick="enviarComando('PAS_ON')">Encender</button>
-      <button class="btn-off" onclick="enviarComando('PAS_OFF')">Apagar</button>
-    </div>
-
-    <div class="card">
-      <h3>🛋️ Sala</h3>
-      <button class="btn-on" onclick="enviarComando('SAL_ON')">Encender</button>
-      <button class="btn-off" onclick="enviarComando('SAL_OFF')">Apagar</button>
-    </div>
+  <h1>🏠 Panel Domótico ESP32-C3</h1>
+  
+  <div id="status" class="status-container disconnected">
+    Estado: Desconectado 🔴
   </div>
 
-  <script src="app.js"></script>
+  <button class="btn-connect" onclick="conectarBLE()">🔗 Conectar Bluetooth</button>
+
+  <div class="grid-container">
+
+    <!-- Cuarto 1 -->
+    <div class="card">
+      <h3>🛏️ Cuarto 1</h3>
+      <div class="btn-group">
+        <button class="btn-action btn-on" onclick="enviarComando('C1_ON')">Encender</button>
+        <button class="btn-action btn-off" onclick="enviarComando('C1_OFF')">Apagar</button>
+      </div>
+    </div>
+
+    <!-- Cuarto 2 -->
+    <div class="card">
+      <h3>🛏️ Cuarto 2</h3>
+      <div class="btn-group">
+        <button class="btn-action btn-on" onclick="enviarComando('C2_ON')">Encender</button>
+        <button class="btn-action btn-off" onclick="enviarComando('C2_OFF')">Apagar</button>
+      </div>
+    </div>
+
+    <!-- Pasadizo -->
+    <div class="card">
+      <h3>🚶 Pasadizo</h3>
+      <div class="btn-group">
+        <button class="btn-action btn-on" onclick="enviarComando('PASADIZO_ON')">Encender</button>
+        <button class="btn-action btn-off" onclick="enviarComando('PASADIZO_OFF')">Apagar</button>
+      </div>
+    </div>
+
+    <!-- Sala -->
+    <div class="card">
+      <h3>🛋️ Sala</h3>
+      <div class="btn-group">
+        <button class="btn-action btn-on" onclick="enviarComando('SALA_ON')">Encender</button>
+        <button class="btn-action btn-off" onclick="enviarComando('SALA_OFF')">Apagar</button>
+      </div>
+    </div>
+
+    <!-- Garaje -->
+    <div class="card">
+      <h3>🚗 Garaje</h3>
+      <div class="btn-group">
+        <button class="btn-action btn-on" onclick="enviarComando('GARAJE_ABRIR')">📂 Abrir</button>
+        <button class="btn-action btn-off" onclick="enviarComando('GARAJE_CERRAR')">🔒 Cerrar</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const SERVICE_UUID           = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+    const CHARACTERISTIC_UUID_RX = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
+
+    let bluetoothDevice;
+    let rxCharacteristic;
+
+    async function conectarBLE() {
+      try {
+        bluetoothDevice = await navigator.bluetooth.requestDevice({
+          filters: [{ name: 'Domotica_ESP32C3' }],
+          optionalServices: [SERVICE_UUID]
+        });
+
+        bluetoothDevice.addEventListener('gattserverdisconnected', alDesconectar);
+
+        const server = await bluetoothDevice.gatt.connect();
+        const service = await server.getPrimaryService(SERVICE_UUID);
+        rxCharacteristic = await service.getCharacteristic(CHARACTERISTIC_UUID_RX);
+
+        const statusDiv = document.getElementById('status');
+        statusDiv.innerText = "Estado: Conectado 🟢";
+        statusDiv.className = "status-container connected";
+
+        alert("¡Conexión Bluetooth Exitosa!");
+
+      } catch (error) {
+        console.error("Error al conectar:", error);
+        alert("Error de conexión: " + error);
+      }
+    }
+
+    async function enviarComando(comando) {
+      if (!rxCharacteristic) {
+        alert("Primero debes conectar el dispositivo Bluetooth.");
+        return;
+      }
+
+      try {
+        let encoder = new TextEncoder('utf-8');
+        await rxCharacteristic.writeValue(encoder.encode(comando));
+      } catch (error) {
+        console.error("Error al enviar comando:", error);
+      }
+    }
+
+    function alDesconectar() {
+      const statusDiv = document.getElementById('status');
+      statusDiv.innerText = "Estado: Desconectado 🔴";
+      statusDiv.className = "status-container disconnected";
+      rxCharacteristic = null;
+    }
+  </script>
 </body>
 </html>
