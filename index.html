@@ -1,647 +1,586 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel Domótico · ESP32-C3</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Domótico · ESP32-C3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --page-bg:#f3f1fb;
+      --card:#ffffff;
+      --line:#ece7f6;
+      --ink:#232235;
+      --sub:#7c7793;
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+      --dusk-top:#2b1257;
+      --dusk-mid:#7b2f8f;
+      --dusk-glow:#ff7a5c;
 
-<style>
-  :root{
-    --page-bg:#f3f1fb;
-    --card:#ffffff;
-    --line:#ece7f6;
-    --ink:#232235;
-    --sub:#7c7793;
+      --bulb-on:#ffd23f;
+      --bulb-off:#dcd6ee;
 
-    --dusk-top:#2b1257;
-    --dusk-mid:#7b2f8f;
-    --dusk-glow:#ff7a5c;
+      --ok:#22c55e;
+      --danger:#ef4444;
 
-    --bulb-on:#ffd23f;
-    --bulb-off:#dcd6ee;
+      --shadow: 0 16px 36px -16px rgba(75,50,140,0.22);
+    }
 
-    --ok:#22c55e;
-    --danger:#ef4444;
+    *{box-sizing:border-box;margin:0;padding:0;}
 
-    --shadow: 0 16px 36px -16px rgba(75,50,140,0.22);
-  }
+    body{
+      font-family:'Nunito Sans',sans-serif;
+      background:
+        radial-gradient(circle at 10% 0%, #ffe3f0 0%, transparent 42%),
+        radial-gradient(circle at 100% 8%, #dbeafe 0%, transparent 38%),
+        radial-gradient(circle at 50% 100%, #fef3c7 0%, transparent 40%),
+        var(--page-bg);
+      color:var(--ink);
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:28px 16px 60px;
+    }
 
-  *{box-sizing:border-box;margin:0;padding:0;}
+    .wrap{ width:100%; max-width:920px; }
 
-  body{
-    font-family:'Nunito Sans',sans-serif;
-    background:
-      radial-gradient(circle at 10% 0%, #ffe3f0 0%, transparent 42%),
-      radial-gradient(circle at 100% 8%, #dbeafe 0%, transparent 38%),
-      radial-gradient(circle at 50% 100%, #fef3c7 0%, transparent 40%),
-      var(--page-bg);
-    color:var(--ink);
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    padding:28px 16px 60px;
-  }
+    /* ---------- HERO ---------- */
+    .hero{
+      position:relative;
+      border-radius:28px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      margin-bottom:22px;
+      background:linear-gradient(160deg,var(--dusk-top) 0%,var(--dusk-mid) 55%, var(--dusk-glow) 100%);
+    }
 
-  .wrap{ width:100%; max-width:920px; }
+    .hero svg{ display:block; width:100%; height:auto; }
 
-  /* ---------- HERO ---------- */
-  .hero{
-    position:relative;
-    border-radius:28px;
-    overflow:hidden;
-    box-shadow:var(--shadow);
-    margin-bottom:22px;
-    background:linear-gradient(160deg,var(--dusk-top) 0%,var(--dusk-mid) 55%, var(--dusk-glow) 100%);
-  }
+    .hero-caption{ position:absolute; top:20px; left:24px; color:#fff5f0; }
+    .hero-eyebrow{
+      font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase;
+      opacity:0.8; font-weight:700;
+    }
+    .hero-title{
+      font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.75rem;
+      letter-spacing:-0.01em; text-shadow:0 2px 12px rgba(0,0,0,0.3);
+    }
 
-  .hero svg{ display:block; width:100%; height:auto; }
+    .cloud{ opacity:0.6; }
+    .cloud1{ animation: drift 70s linear infinite; }
+    .cloud2{ animation: drift 95s linear infinite reverse; }
+    .cloud3{ animation: drift 120s linear infinite; }
+    @keyframes drift{ from{transform:translateX(-40px);} to{transform:translateX(560px);} }
 
-  .hero-caption{ position:absolute; top:20px; left:24px; color:#fff5f0; }
-  .hero-eyebrow{
-    font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase;
-    opacity:0.8; font-weight:700;
-  }
-  .hero-title{
-    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:1.75rem;
-    letter-spacing:-0.01em; text-shadow:0 2px 12px rgba(0,0,0,0.3);
-  }
+    #sunGlowCircle{ animation: sunbreathe 4.5s ease-in-out infinite; transform-origin:center; }
+    @keyframes sunbreathe{
+      0%,100%{opacity:0.6;transform:scale(1);}
+      50%{opacity:0.95;transform:scale(1.12);}
+    }
 
-  .cloud{ opacity:0.6; }
-  .cloud1{ animation: drift 70s linear infinite; }
-  .cloud2{ animation: drift 95s linear infinite reverse; }
-  .cloud3{ animation: drift 120s linear infinite; }
-  @keyframes drift{ from{transform:translateX(-40px);} to{transform:translateX(560px);} }
+    .window{ transition: fill 0.45s ease, filter 0.45s ease; filter:none; }
+    .window.lit{ fill:var(--bulb-on); filter:drop-shadow(0 0 9px rgba(255,210,63,1)) drop-shadow(0 0 18px rgba(255,170,40,0.6)); }
 
-  #sunGlowCircle{ animation: sunbreathe 4.5s ease-in-out infinite; transform-origin:center; }
-  @keyframes sunbreathe{
-    0%,100%{opacity:0.6;transform:scale(1);}
-    50%{opacity:0.95;transform:scale(1.12);}
-  }
+    .smoke circle{ animation: smokeUp 4s ease-in infinite; }
+    .smoke circle:nth-child(2){ animation-delay:1.3s; }
+    .smoke circle:nth-child(3){ animation-delay:2.6s; }
+    @keyframes smokeUp{
+      0%{opacity:0;transform:translateY(0) scale(0.6);}
+      20%{opacity:0.55;}
+      100%{opacity:0;transform:translateY(-26px) scale(1.3);}
+    }
 
-  .window{ transition: fill 0.45s ease, filter 0.45s ease; filter:none; }
-  .window.lit{ fill:var(--bulb-on); filter:drop-shadow(0 0 9px rgba(255,210,63,1)) drop-shadow(0 0 18px rgba(255,170,40,0.6)); }
+    #garageDoorPanel{ transition: transform 0.6s cubic-bezier(.34,1.9,.4,1); }
+    #garageDoorPanel.open{ transform: translateY(-42px); }
 
-  .smoke circle{ animation: smokeUp 4s ease-in infinite; }
-  .smoke circle:nth-child(2){ animation-delay:1.3s; }
-  .smoke circle:nth-child(3){ animation-delay:2.6s; }
-  @keyframes smokeUp{
-    0%{opacity:0;transform:translateY(0) scale(0.6);}
-    20%{opacity:0.55;}
-    100%{opacity:0;transform:translateY(-26px) scale(1.3);}
-  }
+    /* ---------- CONNECT BAR ---------- */
+    .connect-bar{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      padding:16px 20px;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:14px; flex-wrap:wrap;
+      margin-bottom:24px;
+    }
 
-  #garageDoorPanel{ transition: transform 0.6s cubic-bezier(.34,1.9,.4,1); }
-  #garageDoorPanel.open{ transform: translateY(-42px); }
+    .status-block{ display:flex; align-items:center; gap:12px; }
+    .status-dot{
+      width:13px;height:13px;border-radius:50%;
+      background:var(--danger); position:relative; flex-shrink:0;
+      transition: background 0.3s ease;
+    }
+    .status-dot::after{
+      content:"";position:absolute;inset:-5px;border-radius:50%;
+      border:2px solid var(--danger); opacity:0.35;
+    }
+    .status-dot.on{ background:var(--ok); }
+    .status-dot.on::after{ border-color:var(--ok); animation:ring 1.7s ease-out infinite; }
+    @keyframes ring{
+      0%{transform:scale(0.85);opacity:0.55;}
+      75%{transform:scale(2);opacity:0;}
+      100%{opacity:0;}
+    }
 
-  /* ---------- CONNECT BAR ---------- */
-  .connect-bar{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:20px;
-    box-shadow:var(--shadow);
-    padding:16px 20px;
-    display:flex; align-items:center; justify-content:space-between;
-    gap:14px; flex-wrap:wrap;
-    margin-bottom:24px;
-  }
+    .status-text .label{
+      font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em;
+      color:var(--sub); font-weight:700; display:block;
+    }
+    .status-text .value{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:1.05rem; }
+    .status-text .value.off{ color:var(--danger); }
+    .status-text .value.on{ color:var(--ok); }
 
-  .status-block{ display:flex; align-items:center; gap:12px; }
-  .status-dot{
-    width:13px;height:13px;border-radius:50%;
-    background:var(--danger); position:relative; flex-shrink:0;
-    transition: background 0.3s ease;
-  }
-  .status-dot::after{
-    content:"";position:absolute;inset:-5px;border-radius:50%;
-    border:2px solid var(--danger); opacity:0.35;
-  }
-  .status-dot.on{ background:var(--ok); }
-  .status-dot.on::after{ border-color:var(--ok); animation:ring 1.7s ease-out infinite; }
-  @keyframes ring{
-    0%{transform:scale(0.85);opacity:0.55;}
-    75%{transform:scale(2);opacity:0;}
-    100%{opacity:0;}
-  }
+    .btn-connect{
+      background:linear-gradient(135deg,#ff5f6d,#ffb347);
+      background-size:180% 180%;
+      color:#fff;
+      border:none;
+      padding:13px 26px;
+      font-family:'Nunito Sans',sans-serif;
+      font-size:0.95rem; font-weight:800;
+      border-radius:14px; cursor:pointer;
+      display:flex; align-items:center; gap:9px;
+      box-shadow:0 10px 22px -6px rgba(255,95,109,0.55);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-position 0.4s ease;
+      animation: gradientShift 6s ease infinite;
+    }
+    @keyframes gradientShift{
+      0%,100%{ background-position:0% 50%; }
+      50%{ background-position:100% 50%; }
+    }
+    .btn-connect:hover{ transform:translateY(-2px); box-shadow:0 14px 26px -6px rgba(255,95,109,0.65); }
+    .btn-connect:active{ transform:translateY(0) scale(0.97); }
+    .btn-connect.connected{ background:linear-gradient(135deg,#6d5dfc,#232235); box-shadow:0 10px 22px -6px rgba(109,93,252,0.5); }
 
-  .status-text .label{
-    font-size:0.68rem; text-transform:uppercase; letter-spacing:0.08em;
-    color:var(--sub); font-weight:700; display:block;
-  }
-  .status-text .value{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:1.05rem; }
-  .status-text .value.off{ color:var(--danger); }
-  .status-text .value.on{ color:var(--ok); }
+    .btn-connect .plug-icon{ transition: transform 0.4s ease; }
+    .btn-connect.connected .plug-icon{ transform:rotate(180deg); }
 
-  .btn-connect{
-    background:linear-gradient(135deg,#ff5f6d,#ffb347);
-    background-size:180% 180%;
-    color:#fff;
-    border:none;
-    padding:13px 26px;
-    font-family:'Nunito Sans',sans-serif;
-    font-size:0.95rem; font-weight:800;
-    border-radius:14px; cursor:pointer;
-    display:flex; align-items:center; gap:9px;
-    box-shadow:0 10px 22px -6px rgba(255,95,109,0.55);
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background-position 0.4s ease;
-    animation: gradientShift 6s ease infinite;
-  }
-  @keyframes gradientShift{
-    0%,100%{ background-position:0% 50%; }
-    50%{ background-position:100% 50%; }
-  }
-  .btn-connect:hover{ transform:translateY(-2px); box-shadow:0 14px 26px -6px rgba(255,95,109,0.65); }
-  .btn-connect:active{ transform:translateY(0) scale(0.97); }
-  .btn-connect.connected{ background:linear-gradient(135deg,#6d5dfc,#232235); box-shadow:0 10px 22px -6px rgba(109,93,252,0.5); }
+    /* ---------- GRID / CARDS ---------- */
+    .grid-container{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:16px;
+    }
 
-  .btn-connect .plug-icon{ transition: transform 0.4s ease; }
-  .btn-connect.connected .plug-icon{ transform:rotate(180deg); }
+    .card{
+      position:relative;
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:22px 20px 20px;
+      box-shadow:var(--shadow);
+      display:flex; flex-direction:column; gap:16px;
+      opacity:0; transform:translateY(14px);
+      animation: cardIn 0.5s ease forwards;
+      overflow:hidden;
+      transition: box-shadow 0.35s ease;
+    }
+    .card::before{
+      content:""; position:absolute; top:0; left:0; right:0; height:6px;
+      background:linear-gradient(90deg,var(--a1),var(--a2));
+    }
+    .card.active{
+      box-shadow: 0 18px 34px -12px var(--a1glow), var(--shadow);
+    }
 
-  /* ---------- GRID / CARDS ---------- */
-  .grid-container{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:16px;
-  }
+    .card:nth-child(1){ --a1:#a855f7; --a2:#ec4899; --a1glow:rgba(168,85,247,0.45); animation-delay:0.05s; }
+    .card:nth-child(2){ --a1:#3b82f6; --a2:#22d3ee; --a1glow:rgba(59,130,246,0.45); animation-delay:0.12s; }
+    .card:nth-child(3){ --a1:#10b981; --a2:#4ade80; --a1glow:rgba(16,185,129,0.4); animation-delay:0.19s; }
+    .card:nth-child(4){ --a1:#f59e0b; --a2:#fb923c; --a1glow:rgba(245,158,11,0.45); animation-delay:0.26s; }
+    .card:nth-child(5){ --a1:#6366f1; --a2:#ec4899; --a1glow:rgba(99,102,241,0.45); animation-delay:0.33s; }
+    .card:nth-child(6){ --a1:#06b6d4; --a2:#3b82f6; --a1glow:rgba(6,182,212,0.45); animation-delay:0.40s; }
 
-  .card{
-    position:relative;
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:20px;
-    padding:22px 20px 20px;
-    box-shadow:var(--shadow);
-    display:flex; flex-direction:column; gap:16px;
-    opacity:0; transform:translateY(14px);
-    animation: cardIn 0.5s ease forwards;
-    overflow:hidden;
-    transition: box-shadow 0.35s ease;
-  }
-  .card::before{
-    content:""; position:absolute; top:0; left:0; right:0; height:6px;
-    background:linear-gradient(90deg,var(--a1),var(--a2));
-  }
-  .card.active{
-    box-shadow: 0 18px 34px -12px var(--a1glow), var(--shadow);
-  }
+    @keyframes cardIn{ to{opacity:1;transform:translateY(0);} }
 
-  .card:nth-child(1){ --a1:#a855f7; --a2:#ec4899; --a1glow:rgba(168,85,247,0.45); animation-delay:0.05s; }
-  .card:nth-child(2){ --a1:#3b82f6; --a2:#22d3ee; --a1glow:rgba(59,130,246,0.45); animation-delay:0.12s; }
-  .card:nth-child(3){ --a1:#10b981; --a2:#4ade80; --a1glow:rgba(16,185,129,0.4); animation-delay:0.19s; }
-  .card:nth-child(4){ --a1:#f59e0b; --a2:#fb923c; --a1glow:rgba(245,158,11,0.45); animation-delay:0.26s; }
-  .card:nth-child(5){ --a1:#6366f1; --a2:#ec4899; --a1glow:rgba(99,102,241,0.45); animation-delay:0.33s; }
+    .card-top{ display:flex; align-items:center; justify-content:space-between; }
+    .room-info{ display:flex; align-items:center; gap:13px; }
 
-  @keyframes cardIn{ to{opacity:1;transform:translateY(0);} }
+    .room-icon{
+      width:48px;height:48px;border-radius:14px;
+      background:linear-gradient(135deg,var(--a1),var(--a2));
+      display:flex;align-items:center;justify-content:center;
+      color:#fff; flex-shrink:0;
+      box-shadow:0 8px 16px -6px var(--a1glow);
+      transition: transform 0.3s ease;
+    }
+    .room-icon svg{ width:25px; height:25px; }
+    .card.active .room-icon{ animation: bounceIcon 0.5s ease; }
+    @keyframes bounceIcon{
+      0%{transform:scale(1) rotate(0);}
+      40%{transform:scale(1.2) rotate(-6deg);}
+      70%{transform:scale(0.95) rotate(3deg);}
+      100%{transform:scale(1) rotate(0);}
+    }
 
-  .card-top{ display:flex; align-items:center; justify-content:space-between; }
-  .room-info{ display:flex; align-items:center; gap:13px; }
+    .room-name{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:1.08rem; }
+    .room-state{ font-size:0.8rem; color:var(--sub); font-weight:700; }
 
-  .room-icon{
-    width:48px;height:48px;border-radius:14px;
-    background:linear-gradient(135deg,var(--a1),var(--a2));
-    display:flex;align-items:center;justify-content:center;
-    color:#fff; flex-shrink:0;
-    box-shadow:0 8px 16px -6px var(--a1glow);
-    transition: transform 0.3s ease;
-  }
-  .room-icon svg{ width:25px; height:25px; }
-  .card.active .room-icon{ animation: bounceIcon 0.5s ease; }
-  @keyframes bounceIcon{
-    0%{transform:scale(1) rotate(0);}
-    40%{transform:scale(1.2) rotate(-6deg);}
-    70%{transform:scale(0.95) rotate(3deg);}
-    100%{transform:scale(1) rotate(0);}
-  }
+    /* Switch para interruptores simples */
+    .switch{ position:relative; width:62px; height:35px; flex-shrink:0; }
+    .switch input{ opacity:0; width:0; height:0; }
 
-  .room-name{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:1.08rem; }
-  .room-state{ font-size:0.8rem; color:var(--sub); font-weight:700; }
+    .track{
+      position:absolute; inset:0; border-radius:999px;
+      background:var(--bulb-off); cursor:pointer;
+      transition: background 0.35s ease;
+    }
+    .knob{
+      position:absolute; top:3px; left:3px;
+      width:29px; height:29px; border-radius:50%;
+      background:#fff;
+      display:flex; align-items:center; justify-content:center;
+      color:#b7b0d4;
+      box-shadow:0 2px 6px rgba(0,0,0,0.25);
+      transition: transform 0.4s cubic-bezier(.34,1.9,.4,1), color 0.3s ease;
+    }
+    .knob svg{ width:16px; height:16px; }
 
-  /* switch */
-  .switch{ position:relative; width:62px; height:35px; flex-shrink:0; }
-  .switch input{ opacity:0; width:0; height:0; }
+    input:checked + .track{ background:linear-gradient(135deg,var(--a1),var(--a2)); }
+    input:checked + .track .knob{ transform:translateX(27px); color:var(--bulb-on); }
+    input:checked + .track .knob svg{ filter:drop-shadow(0 0 3px rgba(255,210,63,0.95)); }
+    input:disabled + .track{ opacity:0.5; cursor:not-allowed; }
 
-  .track{
-    position:absolute; inset:0; border-radius:999px;
-    background:var(--bulb-off); cursor:pointer;
-    transition: background 0.35s ease;
-  }
-  .knob{
-    position:absolute; top:3px; left:3px;
-    width:29px; height:29px; border-radius:50%;
-    background:#fff;
-    display:flex; align-items:center; justify-content:center;
-    color:#b7b0d4;
-    box-shadow:0 2px 6px rgba(0,0,0,0.25);
-    transition: transform 0.4s cubic-bezier(.34,1.9,.4,1), color 0.3s ease;
-  }
-  .knob svg{ width:16px; height:16px; }
+    .track.zap::after{
+      content:""; position:absolute; inset:-8px; border-radius:999px;
+      border:3px solid var(--a1); animation: zapRing 0.55s ease-out forwards;
+    }
+    @keyframes zapRing{
+      0%{ transform:scale(0.6); opacity:0.9; }
+      100%{ transform:scale(1.7); opacity:0; }
+    }
 
-  input:checked + .track{ background:linear-gradient(135deg,var(--a1),var(--a2)); }
-  input:checked + .track .knob{ transform:translateX(27px); color:var(--bulb-on); }
-  input:checked + .track .knob svg{ filter:drop-shadow(0 0 3px rgba(255,210,63,0.95)); }
-  input:disabled + .track{ opacity:0.5; cursor:not-allowed; }
+    /* Botones selector de Modo Luz Nocturna */
+    .mode-selector {
+      display: flex;
+      background: #f2eefc;
+      border-radius: 12px;
+      padding: 3px;
+      gap: 4px;
+    }
+    .mode-btn {
+      border: none;
+      background: transparent;
+      padding: 6px 10px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--sub);
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .mode-btn.active {
+      background: linear-gradient(135deg, var(--a1), var(--a2));
+      color: #fff;
+      box-shadow: 0 4px 10px -2px var(--a1glow);
+    }
+    .mode-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
 
-  .track.zap::after{
-    content:""; position:absolute; inset:-8px; border-radius:999px;
-    border:3px solid var(--a1); animation: zapRing 0.55s ease-out forwards;
-  }
-  @keyframes zapRing{
-    0%{ transform:scale(0.6); opacity:0.9; }
-    100%{ transform:scale(1.7); opacity:0; }
-  }
+    .card-foot{
+      display:flex; align-items:center; justify-content:space-between;
+      padding-top:13px; border-top:1px dashed var(--line);
+    }
 
-  .card-foot{
-    display:flex; align-items:center; justify-content:space-between;
-    padding-top:13px; border-top:1px dashed var(--line);
-  }
+    .pill{
+      font-size:0.72rem; font-weight:800; letter-spacing:0.02em;
+      padding:5px 13px; border-radius:999px;
+      background:#f2eefc; color:var(--sub);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    .pill.on{ background:linear-gradient(135deg,var(--a1),var(--a2)); color:#fff; }
 
-  .pill{
-    font-size:0.72rem; font-weight:800; letter-spacing:0.02em;
-    padding:5px 13px; border-radius:999px;
-    background:#f2eefc; color:var(--sub);
-    transition: background 0.3s ease, color 0.3s ease;
-  }
-  .pill.on{ background:linear-gradient(135deg,var(--a1),var(--a2)); color:#fff; }
+    footer{ margin-top:30px; font-size:0.78rem; color:var(--sub); text-align:center; }
+    footer code{ background:#e6e0f7; padding:2px 6px; border-radius:6px; }
 
-  footer{ margin-top:30px; font-size:0.78rem; color:var(--sub); text-align:center; }
-  footer code{ background:#e6e0f7; padding:2px 6px; border-radius:6px; }
-
-  @media (max-width:480px){
-    .hero-title{ font-size:1.35rem; }
-    .connect-bar{ flex-direction:column; align-items:stretch; }
-    .btn-connect{ justify-content:center; }
-  }
-</style>
+    @media (max-width:480px){
+      .hero-title{ font-size:1.35rem; }
+      .connect-bar{ flex-direction:column; align-items:stretch; }
+      .btn-connect{ justify-content:center; }
+    }
+  </style>
 </head>
 <body>
+  <div class="wrap">
 
-<div class="wrap">
+    <div class="hero">
+      <div class="hero-caption">
+        <div class="hero-eyebrow">ESP32-C3 · Bluetooth Low Energy</div>
+        <div class="hero-title">Tu casa, en tiempo real</div>
+      </div>
 
-  <div class="hero">
-    <div class="hero-caption">
-      <div class="hero-eyebrow">ESP32-C3 · Bluetooth Low Energy</div>
-      <div class="hero-title">Tu casa, en tiempo real</div>
-    </div>
+      <svg viewBox="0 0 480 250" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#fff3b0"/>
+            <stop offset="100%" stop-color="#ff5f6d" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="roofGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ff7a5c"/>
+            <stop offset="100%" stop-color="#e0433a"/>
+          </linearGradient>
+        </defs>
 
-    <svg viewBox="0 0 480 250" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="sunGrad" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#fff3b0"/>
-          <stop offset="100%" stop-color="#ff5f6d" stop-opacity="0"/>
-        </radialGradient>
-        <linearGradient id="roofGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#ff7a5c"/>
-          <stop offset="100%" stop-color="#e0433a"/>
-        </linearGradient>
-      </defs>
+        <circle id="sunGlowCircle" cx="404" cy="52" r="48" fill="url(#sunGrad)"/>
+        <circle cx="404" cy="52" r="16" fill="#fff3c4"/>
 
-      <circle id="sunGlowCircle" cx="404" cy="52" r="48" fill="url(#sunGrad)"/>
-      <circle cx="404" cy="52" r="16" fill="#fff3c4"/>
-
-      <g class="cloud cloud1" fill="#f4e9ff" opacity="0.55">
-        <ellipse cx="90" cy="46" rx="34" ry="12"/>
-        <ellipse cx="115" cy="40" rx="24" ry="10"/>
-      </g>
-      <g class="cloud cloud2" fill="#f4e9ff" opacity="0.45">
-        <ellipse cx="260" cy="30" rx="28" ry="10"/>
-        <ellipse cx="282" cy="26" rx="18" ry="8"/>
-      </g>
-      <g class="cloud cloud3" fill="#f4e9ff" opacity="0.4">
-        <ellipse cx="10" cy="80" rx="26" ry="9"/>
-      </g>
-
-      <rect x="0" y="216" width="480" height="34" fill="#1c1033"/>
-
-      <polygon points="55,90 165,26 275,90" fill="url(#roofGrad)"/>
-      <polygon points="55,90 275,90 275,96 55,96" fill="#c23b32"/>
-
-      <rect x="205" y="42" width="14" height="30" fill="#c23b32"/>
-      <g class="smoke" fill="#efe6ff">
-        <circle cx="212" cy="38" r="4"/>
-        <circle cx="214" cy="38" r="5"/>
-        <circle cx="210" cy="38" r="3.5"/>
-      </g>
-
-      <rect x="65" y="96" width="220" height="120" rx="4" fill="#fff8ef" stroke="#2b1257" stroke-width="2"/>
-
-      <rect x="148" y="168" width="30" height="48" rx="3" fill="#6d4a8f" stroke="#2b1257" stroke-width="1.5"/>
-      <circle cx="171" cy="192" r="2" fill="#ffd23f"/>
-
-      <g>
-        <rect id="win-cuarto1" class="window" x="86" y="112" width="38" height="38" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
-        <line x1="105" y1="112" x2="105" y2="150" stroke="#2b1257" stroke-width="1.5"/>
-        <line x1="86" y1="131" x2="124" y2="131" stroke="#2b1257" stroke-width="1.5"/>
-
-        <rect id="win-cuarto2" class="window" x="226" y="112" width="38" height="38" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
-        <line x1="245" y1="112" x2="245" y2="150" stroke="#2b1257" stroke-width="1.5"/>
-        <line x1="226" y1="131" x2="264" y2="131" stroke="#2b1257" stroke-width="1.5"/>
-      </g>
-
-      <g>
-        <rect id="win-pasadizo" class="window" x="92" y="172" width="26" height="30" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
-        <line x1="105" y1="172" x2="105" y2="202" stroke="#2b1257" stroke-width="1.5"/>
-
-        <rect id="win-sala" class="window" x="222" y="170" width="44" height="34" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
-        <line x1="244" y1="170" x2="244" y2="204" stroke="#2b1257" stroke-width="1.5"/>
-        <line x1="222" y1="187" x2="266" y2="187" stroke="#2b1257" stroke-width="1.5"/>
-      </g>
-
-      <rect x="285" y="140" width="130" height="76" rx="4" fill="#f6ecff" stroke="#2b1257" stroke-width="2"/>
-      <clipPath id="garageClip">
-        <rect x="297" y="152" width="106" height="58" rx="3"/>
-      </clipPath>
-      <rect x="297" y="152" width="106" height="58" rx="3" fill="#1c1033"/>
-      <g clip-path="url(#garageClip)">
-        <g id="garageDoorPanel">
-          <rect x="297" y="152" width="106" height="58" fill="#efe0ff" stroke="#2b1257" stroke-width="1.5"/>
-          <line x1="297" y1="167" x2="403" y2="167" stroke="#2b1257" stroke-width="1.2"/>
-          <line x1="297" y1="182" x2="403" y2="182" stroke="#2b1257" stroke-width="1.2"/>
-          <line x1="297" y1="197" x2="403" y2="197" stroke="#2b1257" stroke-width="1.2"/>
+        <g class="cloud cloud1" fill="#f4e9ff" opacity="0.55">
+          <ellipse cx="90" cy="46" rx="34" ry="12"/>
+          <ellipse cx="115" cy="40" rx="24" ry="10"/>
         </g>
-      </g>
-    </svg>
-  </div>
+        <g class="cloud cloud2" fill="#f4e9ff" opacity="0.45">
+          <ellipse cx="260" cy="30" rx="28" ry="10"/>
+          <ellipse cx="282" cy="26" rx="18" ry="8"/>
+        </g>
+        <g class="cloud cloud3" fill="#f4e9ff" opacity="0.4">
+          <ellipse cx="10" cy="80" rx="26" ry="9"/>
+        </g>
 
-  <div class="connect-bar">
-    <div class="status-block">
-      <div class="status-dot" id="statusDot"></div>
-      <div class="status-text">
-        <span class="label">Enlace BLE</span>
-        <span class="value off" id="statusValue">Desconectado</span>
-      </div>
-    </div>
-    <button class="btn-connect" id="connectBtn" onclick="conectarBLE()">
-      <svg class="plug-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 2v4M15 2v4M7 8h10a1 1 0 0 1 1 1v4a5 5 0 0 1-5 5h0a5 5 0 0 1-5-5V9a1 1 0 0 1 1-1z"/>
-        <path d="M12 18v4"/>
+        <rect x="0" y="216" width="480" height="34" fill="#1c1033"/>
+
+        <polygon points="55,90 165,26 275,90" fill="url(#roofGrad)"/>
+        <polygon points="55,90 275,90 275,96 55,96" fill="#c23b32"/>
+
+        <rect x="205" y="42" width="14" height="30" fill="#c23b32"/>
+        <g class="smoke" fill="#efe6ff">
+          <circle cx="212" cy="38" r="4"/>
+          <circle cx="214" cy="38" r="5"/>
+          <circle cx="210" cy="38" r="3.5"/>
+        </g>
+
+        <rect x="65" y="96" width="220" height="120" rx="4" fill="#fff8ef" stroke="#2b1257" stroke-width="2"/>
+
+        <rect x="148" y="168" width="30" height="48" rx="3" fill="#6d4a8f" stroke="#2b1257" stroke-width="1.5"/>
+        <circle cx="171" cy="192" r="2" fill="#ffd23f"/>
+
+        <g>
+          <rect id="win-cuarto1" class="window" x="86" y="112" width="38" height="38" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
+          <line x1="105" y1="112" x2="105" y2="150" stroke="#2b1257" stroke-width="1.5"/>
+          <line x1="86" y1="131" x2="124" y2="131" stroke="#2b1257" stroke-width="1.5"/>
+
+          <rect id="win-cuarto2" class="window" x="226" y="112" width="38" height="38" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
+          <line x1="245" y1="112" x2="245" y2="150" stroke="#2b1257" stroke-width="1.5"/>
+          <line x1="226" y1="131" x2="264" y2="131" stroke="#2b1257" stroke-width="1.5"/>
+        </g>
+
+        <g>
+          <!-- Ventana del Baño -->
+          <rect id="win-bano" class="window" x="92" y="172" width="26" height="30" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
+          <line x1="105" y1="172" x2="105" y2="202" stroke="#2b1257" stroke-width="1.5"/>
+
+          <rect id="win-sala" class="window" x="222" y="170" width="44" height="34" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
+          <line x1="244" y1="170" x2="244" y2="204" stroke="#2b1257" stroke-width="1.5"/>
+          <line x1="222" y1="187" x2="266" y2="187" stroke="#2b1257" stroke-width="1.5"/>
+        </g>
+
+        <rect x="285" y="140" width="130" height="76" rx="4" fill="#f6ecff" stroke="#2b1257" stroke-width="2"/>
+        <clipPath id="garageClip">
+          <rect x="297" y="152" width="106" height="58" rx="3"/>
+        </clipPath>
+        <rect x="297" y="152" width="106" height="58" rx="3" fill="#1c1033"/>
+        <g clip-path="url(#garageClip)">
+          <g id="garageDoorPanel">
+            <rect x="297" y="152" width="106" height="58" fill="#efe0ff" stroke="#2b1257" stroke-width="1.5"/>
+            <line x1="297" y1="167" x2="403" y2="167" stroke="#2b1257" stroke-width="1.2"/>
+            <line x1="297" y1="182" x2="403" y2="182" stroke="#2b1257" stroke-width="1.2"/>
+            <line x1="297" y1="197" x2="403" y2="197" stroke="#2b1257" stroke-width="1.2"/>
+          </g>
+        </g>
       </svg>
-      <span id="connectBtnLabel">Conectar Bluetooth</span>
-    </button>
+    </div>
+
+    <div class="connect-bar">
+      <div class="status-block">
+        <div class="status-dot" id="statusDot"></div>
+        <div class="status-text">
+          <span class="label">Enlace BLE</span>
+          <span class="value off" id="statusValue">Desconectado</span>
+        </div>
+      </div>
+      <button class="btn-connect" id="connectBtn" onclick="conectarBLE()">
+        <svg class="plug-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 2v4M15 2v4M7 8h10a1 1 0 0 1 1 1v4a5 5 0 0 1-5 5h0a5 5 0 0 1-5-5V9a1 1 0 0 1 1-1z"/>
+          <path d="M12 18v4"/>
+        </svg>
+        <span id="connectBtnLabel">Conectar Bluetooth</span>
+      </button>
+    </div>
+
+    <div class="grid-container" id="grid">
+
+      <!-- Cuarto 1 -->
+      <div class="card" data-key="cuarto1">
+        <div class="card-top">
+          <div class="room-info">
+            <div class="room-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 18v-6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v6"/>
+                <path d="M2 18v2M22 18v2"/>
+                <path d="M4 12V8a2 2 0 0 1 2-2h5v4"/>
+              </svg>
+            </div>
+            <div>
+              <div class="room-name">Cuarto 1</div>
+              <div class="room-state">Apagado</div>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" disabled data-on="C1_ON" data-off="C1_OFF" onchange="toggleRoom(this)">
+            <span class="track"><span class="knob">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v.4h6v-.4c0-.5.2-1 .6-1.3A6 6 0 0 0 12 2z"/></svg>
+            </span></span>
+          </label>
+        </div>
+        <div class="card-foot">
+          <span class="pill">PIN 0</span>
+        </div>
+      </div>
+
+      <!-- Cuarto 2 -->
+      <div class="card" data-key="cuarto2">
+        <div class="card-top">
+          <div class="room-info">
+            <div class="room-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 18v-6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v6"/>
+                <path d="M2 18v2M22 18v2"/>
+                <path d="M4 12V8a2 2 0 0 1 2-2h5v4"/>
+              </svg>
+            </div>
+            <div>
+              <div class="room-name">Cuarto 2</div>
+              <div class="room-state">Apagado</div>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" disabled data-on="C2_ON" data-off="C2_OFF" onchange="toggleRoom(this)">
+            <span class="track"><span class="knob">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v.4h6v-.4c0-.5.2-1 .6-1.3A6 6 0 0 0 12 2z"/></svg>
+            </span></span>
+          </label>
+        </div>
+        <div class="card-foot">
+          <span class="pill">PIN 1</span>
+        </div>
+      </div>
+
+      <!-- Baño -->
+      <div class="card" data-key="bano">
+        <div class="card-top">
+          <div class="room-info">
+            <div class="room-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-2.1 2.1L6.5 8"/>
+                <path d="M4 14h16a1 1 0 0 1 1 1v2a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-2a1 1 0 0 1 1-1z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="room-name">Baño</div>
+              <div class="room-state">Apagado</div>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" disabled data-on="BANO_ON" data-off="BANO_OFF" onchange="toggleRoom(this)">
+            <span class="track"><span class="knob">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v.4h6v-.4c0-.5.2-1 .6-1.3A6 6 0 0 0 12 2z"/></svg>
+            </span></span>
+          </label>
+        </div>
+        <div class="card-foot">
+          <span class="pill">PIN 3</span>
+        </div>
+      </div>
+
+      <!-- Sala -->
+      <div class="card" data-key="sala">
+        <div class="card-top">
+          <div class="room-info">
+            <div class="room-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12v4a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-4"/>
+                <path d="M5 12V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/>
+                <path d="M3 17v3M21 17v3"/>
+              </svg>
+            </div>
+            <div>
+              <div class="room-name">Sala</div>
+              <div class="room-state">Apagado</div>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" disabled data-on="SALA_ON" data-off="SALA_OFF" onchange="toggleRoom(this)">
+            <span class="track"><span class="knob">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v.4h6v-.4c0-.5.2-1 .6-1.3A6 6 0 0 0 12 2z"/></svg>
+            </span></span>
+          </label>
+        </div>
+        <div class="card-foot">
+          <span class="pill">PIN 5</span>
+        </div>
+      </div>
+
+      <!-- Garaje -->
+      <div class="card" data-key="garaje">
+        <div class="card-top">
+          <div class="room-info">
+            <div class="room-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 21V9l9-6 9 6v12"/>
+                <path d="M3 12h18"/>
+                <path d="M7 21v-6h10v6"/>
+              </svg>
+            </div>
+            <div>
+              <div class="room-name">Garaje</div>
+              <div class="room-state">Cerrado</div>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" disabled data-on="GARAJE_ABRIR" data-off="GARAJE_CERRAR" onchange="toggleRoom(this)">
+            <span class="track"><span class="knob">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v.4h6v-.4c0-.5.2-1 .6-1.3A6 6 0 0 0 12 2z"/></svg>
+            </span></span>
+          </label>
+        </div>
+        <div class="card-foot">
+          <span class="pill">Servo PIN 6</span>
+        </div>
+      </div>
+
+      <!-- Fotoresistor / Luz Nocturna -->
+      <div class="card" data-key="noche">
+        <div class="card-top">
+          <div class="room-info">
+            <div class="room-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="room-name">Luz Nocturna</div>
+              <div class="room-state" id="nocheState">Automático</div>
+            </div>
+          </div>
+          <div class="mode-selector">
+            <button class="mode-btn active" disabled onclick="setModoNoche(this, 'NOCHE_AUTO', 'Automático')">Auto</button>
+            <button class="mode-btn" disabled onclick="setModoNoche(this, 'NOCHE_ON', 'Encendido')">On</button>
+            <button class="mode-btn" disabled onclick="setModoNoche(this, 'NOCHE_OFF', 'Apagado')">Off</button>
+          </div>
+        </div>
+        <div class="card-foot">
+          <span class="pill" id="nochePill">LDR: PIN 7 | LEDs: PIN 8</span>
+        </div>
+      </div>
+
+    </div>
+
+    <footer>Comandos enviados por BLE · característica <code>beb5483e…26a8</code></footer>
   </div>
 
-  <div class="grid-container" id="grid">
-
-    <div class="card" data-key="cuarto1">
-      <div class="card-top">
-        <div class="room-info">
-          <div class="room-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2 18v-6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v6"/>
-              <path d="M2 18v2M22 18v2"/>
-              <path d="M4 12V8a2 2 0 0 1 2-2h5v4"/>
-            </svg>
-          </div>
-          <div>
-            <div class="room-name">Cuarto 1</div>
-            <div class="room-state">Apagado</div>
-          </div>
-        </div>
-        <label class="switch">
-          <input type="checkbox" disabled data-on="C1_ON" data-off="C1_OFF" onchange="toggleRoom(this)">
-          <span class="track"><span class="knob">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v.4h6v-.4c0-.5.2-1 .6-1.3A6 6 0 0 0 12 2z"/></svg>
-          </span></span>
-        </label>
-      </div>
-      <div class="card-foot">
-        <span class="pill">Luz de habitación</span>
-      </div>
-    </div>
-
-    <div class="card" data-key="cuarto2">
-      <div class="card-top">
-        <div class="room-info">
-          <div class="room-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M2 18v-6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v6"/>
-              <path d="M2 18v2M22 18v2"/>
-              <path d="M4 12V8a2 2 0 0 1 2-2h5v4"/>
-            </svg>
-          </div>
-          <div>
-            <div class="room-name">Cuarto 2</div>
-            <div class="room-state">Apagado</div>
-          </div>
-        </div>
-        <label class="switch">
-          <input type="checkbox" disabled data-on="C2_ON" data-off="C2_OFF" onchange="toggleRoom(this)">
-          <span class="track"><span class="knob">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v.4h6v-.4c0-.5.2-1 .6-1.3A6 6 0 0 0 12 2z"/></svg>
-          </span></span>
-        </label>
-      </div>
-      <div class="card-foot">
-        <span class="pill">Luz de habitación</span>
-      </div>
-    </div>
-
-    <div class="card" data-key="pasadizo">
-      <div class="card-top">
-        <div class="room-info">
-          <div class="room-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="4" y="3" width="16" height="18" rx="2"/>
-              <path d="M9 3v18M15 3v18"/>
-              <path d="M12 10v4"/>
-            </svg>
-          </div>
-          <div>
-            <div class="room-name">Pasadizo</div>
-            <div class="room-state">Apagado</div>
-          </div>
-        </div>
-        <label class="switch">
-          <input type="checkbox" disabled data-on="PASADIZO_ON" data-off="PASADIZO_OFF" onchange="toggleRoom(this)">
-          <span class="track"><span class="knob">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v.4h6v-.4c0-.5.2-1 .6-1.3A6 6 0 0 0 12 2z"/></svg>
-          </span></span>
-        </label>
-      </div>
-      <div class="card-foot">
-        <span class="pill">Luz de pasillo</span>
-      </div>
-    </div>
-
-    <div class="card" data-key="sala">
-      <div class="card-top">
-        <div class="room-info">
-          <div class="room-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 12v4a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-4"/>
-              <path d="M5 12V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"/>
-              <path d="M3 17v3M21 17v3"/>
-            </svg>
-          </div>
-          <div>
-            <div class="room-name">Sala</div>
-            <div class="room-state">Apagado</div>
-          </div>
-        </div>
-        <label class="switch">
-          <input type="checkbox" disabled data-on="SALA_ON" data-off="SALA_OFF" onchange="toggleRoom(this)">
-          <span class="track"><span class="knob">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v.4h6v-.4c0-.5.2-1 .6-1.3A6 6 0 0 0 12 2z"/></svg>
-          </span></span>
-        </label>
-      </div>
-      <div class="card-foot">
-        <span class="pill">Luz principal</span>
-      </div>
-    </div>
-
-    <div class="card" data-key="garaje">
-      <div class="card-top">
-        <div class="room-info">
-          <div class="room-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 21V9l9-6 9 6v12"/>
-              <path d="M3 12h18"/>
-              <path d="M7 21v-6h10v6"/>
-            </svg>
-          </div>
-          <div>
-            <div class="room-name">Garaje</div>
-            <div class="room-state">Cerrado</div>
-          </div>
-        </div>
-        <label class="switch">
-          <input type="checkbox" disabled data-on="GARAJE_ABRIR" data-off="GARAJE_CERRAR" onchange="toggleRoom(this)">
-          <span class="track"><span class="knob">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v.4h6v-.4c0-.5.2-1 .6-1.3A6 6 0 0 0 12 2z"/></svg>
-          </span></span>
-        </label>
-      </div>
-      <div class="card-foot">
-        <span class="pill">Portón automático</span>
-      </div>
-    </div>
-
-  </div>
-
-  <footer>Comandos enviados por BLE · característica <code>beb5483e…26a8</code></footer>
-</div>
-
-<script>
-  const SERVICE_UUID           = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
-  const CHARACTERISTIC_UUID_RX = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
-
-  let bluetoothDevice;
-  let rxCharacteristic;
-
-  const dot          = document.getElementById('statusDot');
-  const statusValue   = document.getElementById('statusValue');
-  const connectBtn    = document.getElementById('connectBtn');
-  const connectLabel  = document.getElementById('connectBtnLabel');
-
-  async function conectarBLE() {
-    if (rxCharacteristic && bluetoothDevice && bluetoothDevice.gatt.connected) {
-      bluetoothDevice.gatt.disconnect();
-      return;
-    }
-
-    try {
-      connectLabel.textContent = "Buscando...";
-
-      bluetoothDevice = await navigator.bluetooth.requestDevice({
-        filters: [{ name: 'Domotica_ESP32C3' }],
-        optionalServices: [SERVICE_UUID]
-      });
-
-      bluetoothDevice.addEventListener('gattserverdisconnected', alDesconectar);
-
-      const server = await bluetoothDevice.gatt.connect();
-      const service = await server.getPrimaryService(SERVICE_UUID);
-      rxCharacteristic = await service.getCharacteristic(CHARACTERISTIC_UUID_RX);
-
-      marcarConectado();
-
-    } catch (error) {
-      console.error("Error al conectar:", error);
-      connectLabel.textContent = "Conectar Bluetooth";
-      alert("Error de conexión: " + error);
-    }
-  }
-
-  function marcarConectado() {
-    dot.classList.add('on');
-    statusValue.textContent = "Conectado";
-    statusValue.classList.remove('off');
-    statusValue.classList.add('on');
-
-    connectBtn.classList.add('connected');
-    connectLabel.textContent = "Desconectar";
-
-    document.querySelectorAll('.switch input').forEach(input => input.disabled = false);
-  }
-
-  function alDesconectar() {
-    dot.classList.remove('on');
-    statusValue.textContent = "Desconectado";
-    statusValue.classList.remove('on');
-    statusValue.classList.add('off');
-
-    connectBtn.classList.remove('connected');
-    connectLabel.textContent = "Conectar Bluetooth";
-
-    rxCharacteristic = null;
-
-    document.querySelectorAll('.switch input').forEach(input => {
-      input.disabled = true;
-      input.checked = false;
-    });
-    document.querySelectorAll('.card').forEach(actualizarEstadoVisual);
-  }
-
-  async function toggleRoom(checkbox) {
-    const comando = checkbox.checked ? checkbox.dataset.on : checkbox.dataset.off;
-    await enviarComando(comando);
-
-    const track = checkbox.nextElementSibling;
-    track.classList.remove('zap');
-    void track.offsetWidth;
-    track.classList.add('zap');
-    setTimeout(() => track.classList.remove('zap'), 550);
-
-    actualizarEstadoVisual(checkbox.closest('.card'));
-  }
-
-  function actualizarEstadoVisual(card) {
-    const key = card.dataset.key;
-    const checkbox = card.querySelector('.switch input');
-    const stateText = card.querySelector('.room-state');
-    const pill = card.querySelector('.pill');
-    const encendido = checkbox.checked;
-
-    card.classList.toggle('active', encendido);
-
-    if (key === 'garaje') {
-      stateText.textContent = encendido ? "Abierto" : "Cerrado";
-      document.getElementById('garageDoorPanel').classList.toggle('open', encendido);
-    } else {
-      stateText.textContent = encendido ? "Encendido" : "Apagado";
-      const win = document.getElementById('win-' + key);
-      if (win) win.classList.toggle('lit', encendido);
-    }
-
-    pill.classList.toggle('on', encendido);
-  }
-
-  async function enviarComando(comando) {
-    if (!rxCharacteristic) {
-      alert("Primero debes conectar el dispositivo Bluetooth.");
-      return;
-    }
-    try {
-      let encoder = new TextEncoder('utf-8');
-      await rxCharacteristic.writeValue(encoder.encode(comando));
-      console.log("Comando enviado:", comando);
-    } catch (error) {
-      console.error("Error al enviar comando:", error);
-    }
-  }
-</script>
+  <script src="script.js"></script>
 </body>
 </html>
