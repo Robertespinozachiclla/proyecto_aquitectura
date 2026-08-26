@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Domótico · ESP32-C3</title>
+  <title>Panel Domótico · ESP32</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -91,9 +91,6 @@
       20%{opacity:0.55;}
       100%{opacity:0;transform:translateY(-26px) scale(1.3);}
     }
-
-    #garageDoorPanel{ transition: transform 0.6s cubic-bezier(.34,1.9,.4,1); }
-    #garageDoorPanel.open{ transform: translateY(-42px); }
 
     /* ---------- CONNECT BAR ---------- */
     .connect-bar{
@@ -191,7 +188,6 @@
     .card:nth-child(3){ --a1:#10b981; --a2:#4ade80; --a1glow:rgba(16,185,129,0.4); animation-delay:0.19s; }
     .card:nth-child(4){ --a1:#f59e0b; --a2:#fb923c; --a1glow:rgba(245,158,11,0.45); animation-delay:0.26s; }
     .card:nth-child(5){ --a1:#6366f1; --a2:#ec4899; --a1glow:rgba(99,102,241,0.45); animation-delay:0.33s; }
-    .card:nth-child(6){ --a1:#06b6d4; --a2:#3b82f6; --a1glow:rgba(6,182,212,0.45); animation-delay:0.40s; }
 
     @keyframes cardIn{ to{opacity:1;transform:translateY(0);} }
 
@@ -309,7 +305,7 @@
 
     <div class="hero">
       <div class="hero-caption">
-        <div class="hero-eyebrow">ESP32-C3 · Bluetooth Low Energy</div>
+        <div class="hero-eyebrow">ESP32 · Bluetooth Low Energy</div>
         <div class="hero-title">Tu casa, en tiempo real</div>
       </div>
 
@@ -333,8 +329,8 @@
           <ellipse cx="115" cy="40" rx="24" ry="10"/>
         </g>
         <g class="cloud cloud2" fill="#f4e9ff" opacity="0.45">
-          <ellipse cx="260" cy="30" rx="28" ry="10"/>
-          <ellipse cx="282" cy="26" rx="18" ry="8"/>
+          <ellipse cx="300" cy="30" rx="28" ry="10"/>
+          <ellipse cx="322" cy="26" rx="18" ry="8"/>
         </g>
         <g class="cloud cloud3" fill="#f4e9ff" opacity="0.4">
           <ellipse cx="10" cy="80" rx="26" ry="9"/>
@@ -342,53 +338,40 @@
 
         <rect x="0" y="216" width="480" height="34" fill="#1c1033"/>
 
-        <polygon points="55,90 165,26 275,90" fill="url(#roofGrad)"/>
-        <polygon points="55,90 275,90 275,96 55,96" fill="#c23b32"/>
+        <!-- Casa centrada, sin el bloque de garaje -->
+        <polygon points="115,86 240,20 365,86" fill="url(#roofGrad)"/>
+        <polygon points="115,86 365,86 365,92 115,92" fill="#c23b32"/>
 
-        <rect x="205" y="42" width="14" height="30" fill="#c23b32"/>
+        <rect x="280" y="36" width="14" height="30" fill="#c23b32"/>
         <g class="smoke" fill="#efe6ff">
-          <circle cx="212" cy="38" r="4"/>
-          <circle cx="214" cy="38" r="5"/>
-          <circle cx="210" cy="38" r="3.5"/>
+          <circle cx="287" cy="32" r="4"/>
+          <circle cx="289" cy="32" r="5"/>
+          <circle cx="285" cy="32" r="3.5"/>
         </g>
 
-        <rect x="65" y="96" width="220" height="120" rx="4" fill="#fff8ef" stroke="#2b1257" stroke-width="2"/>
+        <rect x="125" y="92" width="230" height="124" rx="4" fill="#fff8ef" stroke="#2b1257" stroke-width="2"/>
 
-        <rect x="148" y="168" width="30" height="48" rx="3" fill="#6d4a8f" stroke="#2b1257" stroke-width="1.5"/>
-        <circle cx="171" cy="192" r="2" fill="#ffd23f"/>
+        <rect x="223" y="168" width="30" height="48" rx="3" fill="#6d4a8f" stroke="#2b1257" stroke-width="1.5"/>
+        <circle cx="246" cy="192" r="2" fill="#ffd23f"/>
 
         <g>
-          <rect id="win-cuarto1" class="window" x="86" y="112" width="38" height="38" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
-          <line x1="105" y1="112" x2="105" y2="150" stroke="#2b1257" stroke-width="1.5"/>
-          <line x1="86" y1="131" x2="124" y2="131" stroke="#2b1257" stroke-width="1.5"/>
+          <rect id="win-cuarto1" class="window" x="146" y="108" width="38" height="38" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
+          <line x1="165" y1="108" x2="165" y2="146" stroke="#2b1257" stroke-width="1.5"/>
+          <line x1="146" y1="127" x2="184" y2="127" stroke="#2b1257" stroke-width="1.5"/>
 
-          <rect id="win-cuarto2" class="window" x="226" y="112" width="38" height="38" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
-          <line x1="245" y1="112" x2="245" y2="150" stroke="#2b1257" stroke-width="1.5"/>
-          <line x1="226" y1="131" x2="264" y2="131" stroke="#2b1257" stroke-width="1.5"/>
+          <rect id="win-cuarto2" class="window" x="296" y="108" width="38" height="38" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
+          <line x1="315" y1="108" x2="315" y2="146" stroke="#2b1257" stroke-width="1.5"/>
+          <line x1="296" y1="127" x2="334" y2="127" stroke="#2b1257" stroke-width="1.5"/>
         </g>
 
         <g>
           <!-- Ventana del Baño -->
-          <rect id="win-bano" class="window" x="92" y="172" width="26" height="30" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
-          <line x1="105" y1="172" x2="105" y2="202" stroke="#2b1257" stroke-width="1.5"/>
+          <rect id="win-bano" class="window" x="152" y="172" width="26" height="30" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
+          <line x1="165" y1="172" x2="165" y2="202" stroke="#2b1257" stroke-width="1.5"/>
 
-          <rect id="win-sala" class="window" x="222" y="170" width="44" height="34" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
-          <line x1="244" y1="170" x2="244" y2="204" stroke="#2b1257" stroke-width="1.5"/>
-          <line x1="222" y1="187" x2="266" y2="187" stroke="#2b1257" stroke-width="1.5"/>
-        </g>
-
-        <rect x="285" y="140" width="130" height="76" rx="4" fill="#f6ecff" stroke="#2b1257" stroke-width="2"/>
-        <clipPath id="garageClip">
-          <rect x="297" y="152" width="106" height="58" rx="3"/>
-        </clipPath>
-        <rect x="297" y="152" width="106" height="58" rx="3" fill="#1c1033"/>
-        <g clip-path="url(#garageClip)">
-          <g id="garageDoorPanel">
-            <rect x="297" y="152" width="106" height="58" fill="#efe0ff" stroke="#2b1257" stroke-width="1.5"/>
-            <line x1="297" y1="167" x2="403" y2="167" stroke="#2b1257" stroke-width="1.2"/>
-            <line x1="297" y1="182" x2="403" y2="182" stroke="#2b1257" stroke-width="1.2"/>
-            <line x1="297" y1="197" x2="403" y2="197" stroke="#2b1257" stroke-width="1.2"/>
-          </g>
+          <rect id="win-sala" class="window" x="292" y="170" width="44" height="34" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
+          <line x1="314" y1="170" x2="314" y2="204" stroke="#2b1257" stroke-width="1.5"/>
+          <line x1="292" y1="187" x2="336" y2="187" stroke="#2b1257" stroke-width="1.5"/>
         </g>
       </svg>
     </div>
@@ -523,34 +506,6 @@
         </div>
       </div>
 
-      <!-- Garaje -->
-      <div class="card" data-key="garaje">
-        <div class="card-top">
-          <div class="room-info">
-            <div class="room-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 21V9l9-6 9 6v12"/>
-                <path d="M3 12h18"/>
-                <path d="M7 21v-6h10v6"/>
-              </svg>
-            </div>
-            <div>
-              <div class="room-name">Garaje</div>
-              <div class="room-state">Cerrado</div>
-            </div>
-          </div>
-          <label class="switch">
-            <input type="checkbox" disabled data-on="GARAJE_ABRIR" data-off="GARAJE_CERRAR" onchange="toggleRoom(this)">
-            <span class="track"><span class="knob">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v.4h6v-.4c0-.5.2-1 .6-1.3A6 6 0 0 0 12 2z"/></svg>
-            </span></span>
-          </label>
-        </div>
-        <div class="card-foot">
-          <span class="pill"></span>
-        </div>
-      </div>
-
       <!-- Fotoresistor / Luz Nocturna -->
       <div class="card" data-key="noche">
         <div class="card-top">
@@ -578,7 +533,7 @@
 
     </div>
 
-    <footer> <code></code></footer>
+    <footer>Dispositivo: <code id="deviceName">—</code></footer>
   </div>
 
   <script src="script.js"></script>
