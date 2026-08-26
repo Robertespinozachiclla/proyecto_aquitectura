@@ -1,4 +1,4 @@
-// UUIDs coincidentes con el C++ del ESP32-C3
+// UUIDs coincidentes con el firmware del ESP32
 const SERVICE_UUID           = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
 const CHARACTERISTIC_UUID_RX = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
 
@@ -9,6 +9,7 @@ let dot;
 let statusValue;
 let connectBtn;
 let connectLabel;
+let deviceNameEl;
 
 // Inicialización de variables una vez cargado el DOM
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   statusValue   = document.getElementById('statusValue');
   connectBtn    = document.getElementById('connectBtn');
   connectLabel  = document.getElementById('connectBtnLabel');
+  deviceNameEl  = document.getElementById('deviceName');
 });
 
 async function conectarBLE() {
@@ -35,13 +37,14 @@ async function conectarBLE() {
     if (connectLabel) connectLabel.textContent = "Buscando...";
     console.log("Solicitando selección de dispositivo Bluetooth...");
 
-    // Intentar buscar con filtro o permitir elegir entre todos los dispositivos cercanos
+    // Aceptamos todos los dispositivos para garantizar que aparezca la ventana emergente
     bluetoothDevice = await navigator.bluetooth.requestDevice({
-      // Aceptamos todos los dispositivos para garantizar que aparezca la ventana emergente
       acceptAllDevices: true,
       optionalServices: [SERVICE_UUID]
     });
 
+    // Evitar acumular listeners si se reconecta varias veces con el mismo dispositivo
+    bluetoothDevice.removeEventListener('gattserverdisconnected', alDesconectar);
     bluetoothDevice.addEventListener('gattserverdisconnected', alDesconectar);
 
     console.log("Conectando al Servidor GATT de:", bluetoothDevice.name || "Dispositivo sin nombre");
@@ -58,7 +61,7 @@ async function conectarBLE() {
   } catch (error) {
     console.error("Error o cancelación al conectar:", error);
     if (connectLabel) connectLabel.textContent = "Conectar Bluetooth";
-    
+
     // Solo mostrar alerta si no fue que el usuario canceló la ventana
     if (error.name !== 'NotFoundError') {
       alert("No se pudo conectar: " + error.message);
@@ -76,6 +79,7 @@ function marcarConectado() {
 
   if (connectBtn) connectBtn.classList.add('connected');
   if (connectLabel) connectLabel.textContent = "Desconectar";
+  if (deviceNameEl) deviceNameEl.textContent = bluetoothDevice.name || "sin nombre";
 
   // Habilitar interruptores y botones de modo
   document.querySelectorAll('.switch input').forEach(input => input.disabled = false);
@@ -93,6 +97,7 @@ function alDesconectar() {
 
   if (connectBtn) connectBtn.classList.remove('connected');
   if (connectLabel) connectLabel.textContent = "Conectar Bluetooth";
+  if (deviceNameEl) deviceNameEl.textContent = "—";
 
   rxCharacteristic = null;
 
@@ -124,7 +129,6 @@ async function toggleRoom(checkbox) {
 async function setModoNoche(btn, comando, textoEstado) {
   await enviarComando(comando);
 
-  // Cambiar estado visual de botones
   const parentCard = btn.closest('.card');
   if (parentCard) {
     parentCard.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -132,14 +136,22 @@ async function setModoNoche(btn, comando, textoEstado) {
 
     const nocheState = document.getElementById('nocheState');
     if (nocheState) nocheState.textContent = textoEstado;
-    parentCard.classList.toggle('active', comando !== 'NOCHE_OFF');
+
+    const activo = comando !== 'NOCHE_OFF';
+    parentCard.classList.toggle('active', activo);
+
+    const pill = document.getElementById('nochePill');
+    if (pill) {
+      pill.classList.toggle('on', activo);
+      pill.textContent = textoEstado;
+    }
   }
 }
 
 function actualizarEstadoVisual(card) {
   const key = card.dataset.key;
   const checkbox = card.querySelector('.switch input');
-  
+
   if (!checkbox) return; // Si es la tarjeta de la luz nocturna, no usa checkbox
 
   const stateText = card.querySelector('.room-state');
@@ -148,17 +160,14 @@ function actualizarEstadoVisual(card) {
 
   card.classList.toggle('active', encendido);
 
-  if (key === 'garaje') {
-    if (stateText) stateText.textContent = encendido ? "Abierto" : "Cerrado";
-    const garageDoor = document.getElementById('garageDoorPanel');
-    if (garageDoor) garageDoor.classList.toggle('open', encendido);
-  } else {
-    if (stateText) stateText.textContent = encendido ? "Encendido" : "Apagado";
-    const win = document.getElementById('win-' + key);
-    if (win) win.classList.toggle('lit', encendido);
-  }
+  if (stateText) stateText.textContent = encendido ? "Encendido" : "Apagado";
+  const win = document.getElementById('win-' + key);
+  if (win) win.classList.toggle('lit', encendido);
 
-  if (pill) pill.classList.toggle('on', encendido);
+  if (pill) {
+    pill.classList.toggle('on', encendido);
+    pill.textContent = encendido ? "Encendido" : "Apagado";
+  }
 }
 
 async function enviarComando(comando) {
@@ -167,7 +176,7 @@ async function enviarComando(comando) {
     return;
   }
   try {
-    let encoder = new TextEncoder('utf-8');
+    let encoder = new TextEncoder();
     await rxCharacteristic.writeValue(encoder.encode(comando));
     console.log("Comando enviado:", comando);
   } catch (error) {
