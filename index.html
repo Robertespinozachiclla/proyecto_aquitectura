@@ -187,7 +187,10 @@
     .card:nth-child(2){ --a1:#3b82f6; --a2:#22d3ee; --a1glow:rgba(59,130,246,0.45); animation-delay:0.12s; }
     .card:nth-child(3){ --a1:#10b981; --a2:#4ade80; --a1glow:rgba(16,185,129,0.4); animation-delay:0.19s; }
     .card:nth-child(4){ --a1:#f59e0b; --a2:#fb923c; --a1glow:rgba(245,158,11,0.45); animation-delay:0.26s; }
-    .card:nth-child(5){ --a1:#6366f1; --a2:#ec4899; --a1glow:rgba(99,102,241,0.45); animation-delay:0.33s; }
+    .card:nth-child(5){ --a1:#14b8a6; --a2:#06b6d4; --a1glow:rgba(20,184,166,0.4); animation-delay:0.33s; }
+    .card:nth-child(6){ --a1:#f43f5e; --a2:#fb7185; --a1glow:rgba(244,63,94,0.4); animation-delay:0.40s; }
+    .card:nth-child(7){ --a1:#0ea5e9; --a2:#38bdf8; --a1glow:rgba(14,165,233,0.4); animation-delay:0.47s; }
+    .card:nth-child(8){ --a1:#6366f1; --a2:#ec4899; --a1glow:rgba(99,102,241,0.45); animation-delay:0.54s; }
 
     @keyframes cardIn{ to{opacity:1;transform:translateY(0);} }
 
@@ -373,6 +376,16 @@
           <line x1="314" y1="170" x2="314" y2="204" stroke="#2b1257" stroke-width="1.5"/>
           <line x1="292" y1="187" x2="336" y2="187" stroke="#2b1257" stroke-width="1.5"/>
         </g>
+
+        <g>
+          <!-- Ventana del Salón de Estudio (a la izquierda de la puerta) -->
+          <rect id="win-estudio" class="window" x="188" y="176" width="26" height="26" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
+          <line x1="201" y1="176" x2="201" y2="202" stroke="#2b1257" stroke-width="1.5"/>
+
+          <!-- Ventana de la Cocina (a la derecha de la puerta) -->
+          <rect id="win-cocina" class="window" x="260" y="176" width="26" height="26" rx="3" fill="var(--bulb-off)" stroke="#2b1257" stroke-width="2"/>
+          <line x1="273" y1="176" x2="273" y2="202" stroke="#2b1257" stroke-width="1.5"/>
+        </g>
       </svg>
     </div>
 
@@ -496,6 +509,92 @@
           </div>
           <label class="switch">
             <input type="checkbox" disabled data-on="SALA_ON" data-off="SALA_OFF" onchange="toggleRoom(this)">
+            <span class="track"><span class="knob">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v.4h6v-.4c0-.5.2-1 .6-1.3A6 6 0 0 0 12 2z"/></svg>
+            </span></span>
+          </label>
+        </div>
+        <div class="card-foot">
+          <span class="pill"></span>
+        </div>
+      </div>
+
+      <!-- Salón de Estudio -->
+      <div class="card" data-key="estudio">
+        <div class="card-top">
+          <div class="room-info">
+            <div class="room-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="room-name">Salón de Estudio</div>
+              <div class="room-state">Apagado</div>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" disabled data-on="ESTUDIO_ON" data-off="ESTUDIO_OFF" onchange="toggleRoom(this)">
+            <span class="track"><span class="knob">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v.4h6v-.4c0-.5.2-1 .6-1.3A6 6 0 0 0 12 2z"/></svg>
+            </span></span>
+          </label>
+        </div>
+        <div class="card-foot">
+          <span class="pill"></span>
+        </div>
+      </div>
+
+      <!-- Cocina -->
+      <div class="card" data-key="cocina">
+        <div class="card-top">
+          <div class="room-info">
+            <div class="room-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                <line x1="6" y1="1" x2="6" y2="4"/>
+                <line x1="10" y1="1" x2="10" y2="4"/>
+                <line x1="14" y1="1" x2="14" y2="4"/>
+              </svg>
+            </div>
+            <div>
+              <div class="room-name">Cocina</div>
+              <div class="room-state">Apagado</div>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" disabled data-on="COCINA_ON" data-off="COCINA_OFF" onchange="toggleRoom(this)">
+            <span class="track"><span class="knob">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v.4h6v-.4c0-.5.2-1 .6-1.3A6 6 0 0 0 12 2z"/></svg>
+            </span></span>
+          </label>
+        </div>
+        <div class="card-foot">
+          <span class="pill"></span>
+        </div>
+      </div>
+
+      <!-- Garaje (Servo SG90) -->
+      <div class="card" data-key="garage">
+        <div class="card-top">
+          <div class="room-info">
+            <div class="room-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 21V9l9-6 9 6v12"/>
+                <path d="M3 21h18"/>
+                <path d="M5 21V11h14v10"/>
+                <path d="M9 21v-6h6v6"/>
+              </svg>
+            </div>
+            <div>
+              <div class="room-name">Garaje</div>
+              <div class="room-state">Cerrado</div>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" disabled data-on="GARAGE_OPEN" data-off="GARAGE_CLOSE" onchange="toggleRoom(this)">
             <span class="track"><span class="knob">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v.4h6v-.4c0-.5.2-1 .6-1.3A6 6 0 0 0 12 2z"/></svg>
             </span></span>
