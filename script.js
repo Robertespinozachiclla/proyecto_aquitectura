@@ -160,13 +160,17 @@ function actualizarEstadoVisual(card) {
 
   card.classList.toggle('active', encendido);
 
-  if (stateText) stateText.textContent = encendido ? "Encendido" : "Apagado";
+  const esGaraje = key === 'garage';
+  const textoOn = esGaraje ? "Abierto" : "Encendido";
+  const textoOff = esGaraje ? "Cerrado" : "Apagado";
+
+  if (stateText) stateText.textContent = encendido ? textoOn : textoOff;
   const win = document.getElementById('win-' + key);
   if (win) win.classList.toggle('lit', encendido);
 
   if (pill) {
     pill.classList.toggle('on', encendido);
-    pill.textContent = encendido ? "Encendido" : "Apagado";
+    pill.textContent = encendido ? textoOn : textoOff;
   }
 }
 
